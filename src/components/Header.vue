@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import {
   MetaMaskConnector,
@@ -10,9 +10,7 @@ import {
   useEthersHooks,
   useWallet,
 } from 'vue-dapp';
-import PMessage from 'primevue/toast';
-import { useAppStore } from './store/appStore';
-import { storeToRefs } from 'pinia';
+import { useAppStore } from '../store/appStore';
 
 const {
   address, isActivated, activate, signer,
@@ -23,9 +21,8 @@ const { onAccountsChanged } = useWallet();
 const { connectWith } = useWallet();
 const { onActivated, onDeactivated } = useEthersHooks();
 const { open } = useBoard();
-const { initSoulManager, createNewSoul } = useAppStore();
+const { setSoulManager } = useAppStore();
 
-// wallet modal
 const infuraId = '';
 
 const connectors = [
@@ -45,14 +42,16 @@ const connectors = [
   }),
 ];
 
-onActivated(() => {
-  initSoulManager(signer);
-  router.push('/souls/');
+onActivated(async () => {
+  setSoulManager(signer);
+
   localStorage.setItem('isActivated', isActivated.value);
+
+  router.push('/souls');
 });
 
-onAccountsChanged(() => {
-  initSoulManager(signer);
+onAccountsChanged(async () => {
+  setSoulManager(signer);
 });
 
 onDeactivated(() => {
@@ -68,16 +67,9 @@ onMounted(async () => {
   }
 });
 
-// overlay panel
-const op = ref();
-const store = useAppStore();
-const toggle = (event) => {
-  op.value.toggle(event);
-};
-
 </script>
+
 <template>
-  <PMessage />
   <div id="header">
     <router-link
       id="title-link"
@@ -97,39 +89,11 @@ const toggle = (event) => {
       >
         <PButton
           class="p-button-text"
-          @click="toggle"
+          @click="createNewSoul()"
         >
           <i class="pi pi-plus" />
           Create New Soul
         </PButton>
-        <POverlayPanel
-          ref="op"
-          :show-close-icon="true"
-        >
-          <div id="input-soul-name">
-            <label for="soulName">
-              Name of Soul
-            </label>
-            <PInputText
-              id="soulName"
-              v-model="store.soulName"
-              type="text"
-            />
-            <label for="soulTicker">
-              Soul Ticker (3 max character)
-            </label>
-            <PInputText
-              id="soulTicker"
-              v-model="store.soulTicker"
-              type="text"
-            />
-            <div id="create-button-wrapper">
-              <PButton @click="createNewSoul">
-                Create
-              </PButton>
-            </div>
-          </div>
-        </POverlayPanel>
       </div>
       <div
         id="wallet-button"
@@ -146,24 +110,9 @@ const toggle = (event) => {
       <vd-board :connectors="connectors" />
     </div>
   </div>
-  <router-view />
 </template>
 
-<style>
-body {
-  background-color: var(--surface-ground);
-  height: 100%;
-  margin: 0px;
-}
-
-#app {
-  font-family: var(--font-family);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  margin: auto;
-  width: 100%;
-}
-
+<style scoped>
 .pi-plus {
   margin-right: 1vh;
   font-size: 2vh;
@@ -205,18 +154,5 @@ body {
 #button-wrapper {
   display: flex;
   align-items: center;
-  gap: 1vw;
 }
-#input-soul-name {
-  width: 15vw;
-  display: flex;
-  justify-content: space-between;
-  gap: 2vh;
-  flex-direction: column;
-}
-
-#create-button-wrapper {
-  margin: auto;
-}
-
 </style>
