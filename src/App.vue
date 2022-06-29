@@ -1,6 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import {
   MetaMaskConnector,
   WalletConnectConnector,
@@ -11,8 +12,9 @@ import {
   useWallet,
 } from 'vue-dapp';
 import PMessage from 'primevue/toast';
+import SBTForm from './components/SBTform.vue';
+import CreateSoulButton from './components/CreateSoulButton.vue';
 import { useAppStore } from './store/appStore';
-import { storeToRefs } from 'pinia';
 
 const {
   address, isActivated, activate, signer,
@@ -23,8 +25,9 @@ const { onAccountsChanged } = useWallet();
 const { connectWith } = useWallet();
 const { onActivated, onDeactivated } = useEthersHooks();
 const { open } = useBoard();
-const { initSoulManager, createNewSoul } = useAppStore();
-
+const store = useAppStore();
+const { isLoading } = storeToRefs(useAppStore());
+const { initSoulManager, removeAllListeners } = store;
 // wallet modal
 const infuraId = '';
 
@@ -48,6 +51,9 @@ const connectors = [
 onActivated(() => {
   initSoulManager(signer);
   router.push('/souls/');
+  if (window.ethereum == null) {
+    throw new Error('No injected Ethereum provider');
+  }
   localStorage.setItem('isActivated', isActivated.value);
 });
 
@@ -68,15 +74,13 @@ onMounted(async () => {
   }
 });
 
-// overlay panel
-const op = ref();
-const store = useAppStore();
-const toggle = (event) => {
-  op.value.toggle(event);
-};
+onUnmounted(async () => {
+  await removeAllListeners();
+});
 
 </script>
 <template>
+  <SBTForm />
   <PMessage />
   <div id="header">
     <router-link
@@ -91,46 +95,14 @@ const toggle = (event) => {
       </PButton>
     </router-link>
     <div id="button-wrapper">
-      <div
-        v-if="isActivated"
-        id="plus-button"
-      >
-        <PButton
-          class="p-button-text"
-          @click="toggle"
-        >
-          <i class="pi pi-plus" />
-          Create New Soul
-        </PButton>
-        <POverlayPanel
-          ref="op"
-          :show-close-icon="true"
-        >
-          <div id="input-soul-name">
-            <label for="soulName">
-              Name of Soul
-            </label>
-            <PInputText
-              id="soulName"
-              v-model="store.soulName"
-              type="text"
-            />
-            <label for="soulTicker">
-              Soul Ticker (3 max character)
-            </label>
-            <PInputText
-              id="soulTicker"
-              v-model="store.soulTicker"
-              type="text"
-            />
-            <div id="create-button-wrapper">
-              <PButton @click="createNewSoul">
-                Create
-              </PButton>
-            </div>
-          </div>
-        </POverlayPanel>
-      </div>
+      <PProgressSpinner
+        v-if="isLoading"
+        id="spinner"
+        strokeWidth="5"
+        fill="var(--surface-ground)"
+        animationDuration=".5s"
+      />
+      <CreateSoulButton />
       <div
         id="wallet-button"
       >
@@ -150,6 +122,12 @@ const toggle = (event) => {
 </template>
 
 <style>
+
+#spinner {
+  margin-right: -1vw;
+  width: 3vw;
+  height: 3vh;
+}
 body {
   background-color: var(--surface-ground);
   height: 100%;
@@ -162,15 +140,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   margin: auto;
   width: 100%;
-}
-
-.pi-plus {
-  margin-right: 1vh;
-  font-size: 2vh;
-}
-
-.p-button-text {
-  font-size: 2vh;
 }
 
 #header {
@@ -214,9 +183,4 @@ body {
   gap: 2vh;
   flex-direction: column;
 }
-
-#create-button-wrapper {
-  margin: auto;
-}
-
 </style>

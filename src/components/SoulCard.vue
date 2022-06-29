@@ -24,7 +24,9 @@ const props = defineProps({
           {{ soul.soulTicker }}
         </template>
         <template #content>
-          {{ soul.soulAddress }}
+          <div class="soulcard-content">
+            {{ soul.soulAddress }}
+          </div>
         </template>
       </PCard>
     </PButton>
@@ -40,7 +42,7 @@ const props = defineProps({
   text-align: left;
 }
 
-.p-card-content {
+.soulcard-content {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

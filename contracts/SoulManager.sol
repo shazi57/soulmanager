@@ -27,7 +27,6 @@ contract SoulManager is Ownable {
   function createSoul(string memory _soulName, string memory _soulTicker) external {
     uint currSoulId = _soulId.current();
     Soul newSoul = new Soul(_soulName, _soulTicker, address(this), _msgSender(), currSoulId);
-
     _owners[currSoulId] = _msgSender();
     _numSouls[_msgSender()]++;
     _souls[currSoulId] = address(newSoul);
@@ -58,7 +57,7 @@ contract SoulManager is Ownable {
     uint soulIndex = 0;
     for (uint i = 0; i < _soulId.current(); i++) {
       if (_owners[i] == owner) {
-        address soulAddr = _souls[soulIndex];
+        address soulAddr = _souls[i];
         mySouls[soulIndex] = soulAddr;
         soulIndex ++;
       }
@@ -67,6 +66,10 @@ contract SoulManager is Ownable {
 
   function getSoul(uint soulId) external view returns(address) {
     return _souls[soulId];
+  }
+
+  function getOwner(uint soulId) external view returns(address) {
+    return _owners[soulId];
   }
 
   function getApproval(address issuer, address recipient) public view returns(bytes32) {
@@ -79,7 +82,6 @@ contract SoulManager is Ownable {
     bytes calldata _signature
   ) public view {
     bytes4 success = Soul(_addr).isValidSignature(_hash, _signature);
-    // console.logBytes4(success);
     require (success == 0x12345678, "INVALID_SIGNATURE");
   }
 }

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/interfaces/IERC1271.sol";
 import "hardhat/console.sol";
 import "./SoulManager.sol";
 
-contract Soul is IERC1271, ERC721Holder, ERC721{
+contract Soul is IERC1271, ERC721Holder, ERC721URIStorage{
     using Counters for Counters.Counter;
     using SignatureChecker for address;
     // sender soul specific token id
@@ -26,15 +26,8 @@ contract Soul is IERC1271, ERC721Holder, ERC721{
     event ApprovalSent(address, string);
     event TokenReceived(address, address, uint, string);
 
-    struct SBT {
-      address sender;
-      address recipient;
-      uint tokenId;
-      uint vID;
-      string tokenURI;
-    }
-
-    mapping(uint => SBT) private _sbts;
+    mapping(uint => address) private _issuers;
+    mapping(uint => string) private _tokenURIs;
 
     constructor(string memory _soulName, string memory _sbtSym, address _soulManagerAddr, address _owner, uint _soulId) 
     ERC721(_soulName, _sbtSym){
@@ -64,25 +57,18 @@ contract Soul is IERC1271, ERC721Holder, ERC721{
       return _tokenIndex.current();
     }
 
-    function getAllSBTs() external view returns(SBT[] memory) {
-      SBT[] memory _res = new SBT[](_tokenIndex.current());
-      for (uint i = 0; i < _tokenIndex.current(); i++) {
-        _res[i] = _sbts[i];
-      }
-      return _res;
+    function getIssuer(uint _tokenId) external view returns(address){
+      return _issuers[_tokenId]; 
     }
 
-    function onERC721Received(address, address, uint256 _verificationId, bytes memory _data) public override returns(bytes4) {
-      uint currentIndex = _tokenIndex.current();
-      SBT memory newSbt = SBT({
-        sender: _msgSender(),
-        recipient: address(this),
-        tokenId: currentIndex,
-        vID: _verificationId,
-        tokenURI: string(_data)
-      });
+    function getTokenURI(uint _tokenId) external view returns(string memory) {
+      return _tokenURIs[_tokenId];
+    }
 
-      _sbts[currentIndex] = newSbt;
+    function onERC721Received(address, address, uint256, bytes memory _data) public override returns(bytes4) {
+      uint currentIndex = _tokenIndex.current();
+      _issuers[currentIndex] = _msgSender();
+      _tokenURIs[currentIndex] = string(_data);
       _tokenIndex.increment();
 
       emit TokenReceived(_msgSender(), address(this), currentIndex, string(_data));
@@ -101,6 +87,7 @@ contract Soul is IERC1271, ERC721Holder, ERC721{
     function _issueSBT(address recipient, string memory tokenURI) internal returns (uint256) {   
       uint256 newItemId = _vID.current();
       _safeMint(recipient, newItemId, bytes(tokenURI));
+      _setTokenURI(newItemId, tokenURI);
       _vID.increment();
       return newItemId;
     }

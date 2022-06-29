@@ -7,19 +7,26 @@ async function run() {
     {
       path: '/',
       content: JSON.stringify({
-        name: 'test1',
+        name: 'Resume',
+        description: 'My latest resume',
       }),
     },
     {
       path: '/',
       content: JSON.stringify({
-        name: 'test2',
-      }),
-    },
-    {
-      path: '/',
-      content: JSON.stringify({
-        name: 'test3',
+        name: 'Chainshot Certificate',
+        description: 'Certificate issued by Chainshot bootcamp',
+        image: 'https://ipfs.io/ipfs/QmRhxyUf6173cbmEAQWm4tZ2gFGoQYHgE9NhHBV1X5JMuV',
+        attributes: [
+          {
+            trait_type: 'Issued Date',
+            value: '06/28/2022',
+          },
+          {
+            trait_type: 'Recipient Name',
+            value: 'Taewoo Ryu',
+          },
+        ],
       }),
     },
   ];

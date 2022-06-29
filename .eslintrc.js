@@ -20,5 +20,6 @@ module.exports = {
     'no-restricted-syntax': 'off',
     'no-await-in-loop': 'off',
     'import/prefer-default-export': 'off',
+    'vue/require-default-prop': 'off',
   },
 };

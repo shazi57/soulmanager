@@ -3,18 +3,21 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
+    "local": "vite --mode test",
     "dev": "vite",
     "build": "vite build",
+    "parcel": "parcel index.html",
     "preview": "vite preview"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.6.0",
     "@rollup/plugin-inject": "^4.0.4",
     "@vitejs/plugin-vue": "^2.3.3",
+    "axios": "^0.27.2",
     "dotenv": "^16.0.1",
     "ethers": "^5.6.9",
     "hardhat": "^2.9.9",
-    "ipfs-http-client": "^52.0.5",
+    "ipfs-http-client": "^52.0.1",
     "pinia": "^2.0.14",
     "primeicons": "^5.0.0",
     "primevue": "^3.15.0",
@@ -26,7 +29,6 @@
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.6",
     "@nomiclabs/hardhat-waffle": "^2.0.3",
-    "buffer": "^6.0.3",
     "chai": "^4.3.6",
     "eslint": "^8.17.0",
     "eslint-config-airbnb-base": "^15.0.0",
@@ -34,8 +36,6 @@
     "eslint-plugin-vue": "^9.1.1",
     "ethereum-waffle": "^3.4.4",
     "hardhat-gas-reporter": "^1.0.8",
-    "process": "^0.11.10",
-    "util": "^0.12.4",
-    "vue-eslint-parser": "^9.0.1"
+    "vue-template-compiler": "^2.6.14"
   }
 }

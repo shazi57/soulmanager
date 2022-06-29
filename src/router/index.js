@@ -12,6 +12,9 @@ const routes = [
     path: '/souls',
     name: 'SoulList',
     component: SoulListView,
+    // beforeEnter: (to, from) => {
+    //   console.log(to);
+    // },
   },
 ];
 

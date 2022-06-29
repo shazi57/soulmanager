@@ -1,13 +1,13 @@
 require('dotenv').config();
 
-const existingContractAddr = '0x99422317EcebbaE3Ff9F2b12012335A8aeBAF78f';
+const existingContractAddr = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+const signerAddr = '0x90F79bf6EB2c4f870365E785982E1f101E93b906';
 
 async function main() {
-  const soul = await hre.ethers.getContractAt('Soul', existingContractAddr);
-
-  const size = await soul.ownerOf(0);
-
-  console.log(`this Soul has the size of ${size}`);
+  const soulManager = await hre.ethers.getContractAt('SoulManager', existingContractAddr);
+  const souls = await soulManager.getSouls(signerAddr);
+  console.log(souls);
+  // console.log(`this Soul has the size of ${size}`);
 }
 
 main()

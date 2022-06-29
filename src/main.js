@@ -12,6 +12,10 @@ import ToastService from 'primevue/toastservice';
 import InputText from 'primevue/inputtext';
 import OverlayPanel from 'primevue/overlaypanel';
 import Card from 'primevue/card';
+import SplitButton from 'primevue/splitbutton';
+import Dialog from 'primevue/dialog';
+import ProgressSpinner from 'primevue/progressspinner';
+import Badge from 'primevue/badge';
 import router from './router/index';
 import App from './App.vue';
 
@@ -24,6 +28,10 @@ app.use(VueDapp);
 app.use(PrimeVue);
 app.use(ToastService);
 
+app.component('PProgressSpinner', ProgressSpinner);
+app.component('PBadge', Badge);
+app.component('PDialog', Dialog);
+app.component('PSplitButton', SplitButton);
 app.component('PInputText', InputText);
 app.component('PDropdown', Dropdown);
 app.component('POverlayPanel', OverlayPanel);

@@ -75,17 +75,19 @@ describe('SoulManager', () => {
     const signature = await userTwo.signMessage(ethers.utils.arrayify(payloadHash));
 
     const revertedSignature = await userOne.signMessage(ethers.utils.arrayify(payloadHash));
-    const sig = ethers.utils.splitSignature(signature);
-    const recovered = ethers.utils.verifyMessage(ethers.utils.arrayify(payloadHash), sig);
-    const contractOwner = await recipientSoul.getOwner();
-    console.log({
-      contractOwner,
-      payload,
-      payloadHash,
-      recipientSoulAddress,
-      signature,
-      recovered,
-    });
+
+    // uncomment below for debugging
+    // const sig = ethers.utils.splitSignature(signature);
+    // const recovered = ethers.utils.verifyMessage(ethers.utils.arrayify(payloadHash), sig);
+    // const contractOwner = await recipientSoul.getOwner();
+    // console.log({
+    //   contractOwner,
+    //   payload,
+    //   payloadHash,
+    //   recipientSoulAddress,
+    //   signature,
+    //   recovered,
+    // });
 
     const claimTx = await recipientSoul.claimSBT(issuerSoulAddress, tokenURIOne, signature);
     await expect(claimTx).to.emit(recipientSoul, 'TokenReceived')
@@ -114,5 +116,24 @@ describe('SoulManager', () => {
     const claimTx = recipientSoul.claimSBT(issuerSoulAddress, tokenURIOne, signature);
 
     await expect(claimTx).to.be.revertedWith('releaseSBT: invalid tokenURI');
+  });
+
+  it('correctly manages souls to signers', async () => {
+    const txUserOne = await userOneCon.createSoul('Chainshot2022', 'CHS');
+    const txUserTwo = await userTwoCon.createSoul('MyCredentials', 'MCW');
+    const userOneAddr = await userOne.getAddress();
+    const userTwoAddr = await userTwo.getAddress();
+    await txUserOne.wait();
+    await txUserTwo.wait();
+    const userOneSouls = await soulManager.getSouls(userOneAddr);
+    const userTwoSouls = await soulManager.getSouls(userTwoAddr);
+    console.log(userOneSouls);
+    console.log(userTwoSouls);
+    const actualAddr = await soulManager.getOwner(0);
+    const expectedAddr = userOneAddr;
+    expect(expectedAddr).to.equal(actualAddr);
+    const actualAddr2 = await soulManager.getOwner(1);
+    const expectedAddr2 = userTwoAddr;
+    expect(expectedAddr2).to.equal(actualAddr2);
   });
 });
