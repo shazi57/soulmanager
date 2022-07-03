@@ -28,7 +28,8 @@ node_modules
 coverage
 coverage.json
 typechain
-
+ipfs
+scripts
+test
 #Hardhat files
 cache
-artifacts

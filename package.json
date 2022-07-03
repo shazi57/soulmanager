@@ -4,9 +4,8 @@
   "version": "0.0.0",
   "scripts": {
     "local": "vite --mode test",
-    "dev": "vite",
+    // "dev": "vite",
     "build": "vite build",
-    "parcel": "parcel index.html",
     "preview": "vite preview"
   },
   "dependencies": {
