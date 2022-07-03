@@ -8,10 +8,6 @@ import { useAppStore } from './appStore';
 
 import { abi } from '../artifacts/contracts/Soul.sol/Soul.json';
 
-// const toast = useToast();
-
-const { VITE_SOUL_MANAGER_ADDR } = import.meta.env;
-
 export const useSoulStore = defineStore('Soul', {
   state: () => ({
     soulContract: null,

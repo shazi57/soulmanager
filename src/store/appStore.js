@@ -92,7 +92,7 @@ export const useAppStore = defineStore('app', {
       );
       this.signer = this.soulManager.signer;
       await this.mapSouls();
-      this.soulManager.on('SoulAdded', async (id, name, ticker, addr) => {
+      this.soulManager.on('SoulAdded', async () => {
         await this.mapSouls();
       });
       this.appLoaded = true;
